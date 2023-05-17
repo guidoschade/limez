@@ -1,0 +1,411 @@
+---------------------
+title  : INSTALL file
+author : Guido Schade
+edited : 09-Mar-2001
+---------------------
+
+This text file will help you to setup limez and to prevent problems that may
+occur during installation. Please read it carefully and follow the steps.
+
+!!!!! IMPORTANT !!!!
+
+Since i did not completely manage to configure the "make install"- stuff you need
+to install the server by executing './install_limez.sh <location> <user> <group>'
+after compiling. I would appreciate if someone woud give me some hints about
+automake/conf (kdevelop is also involved i guess). 
+
+!!!!!!!!!!!!!!!!!!!!
+
+
+Table of contents
+=================
+1 Preparation
+1.1 DNS - setup
+1.2 Interfaces
+1.3 Users/Groups
+1.4 DNS Server
+
+2 Installation
+2.1 Source distribution
+2.1.1 Extract the distribution
+2.1.2 Configure your needs
+2.1.3 Build and install
+2.2 Binary distribution
+2.3 Editing the limez - mainconfig 'limez.config'
+2.4 Starting limez
+2.5 First steps
+2.6 Start/Stop script
+2.7 Limez Administrator
+
+3 Database
+3.1 Creating MySQL Database User/DB
+3.2 Creating postgreSQL Database User/DB
+3.3 Database Tables
+3.4 Configuration
+3.5 DB Config Example
+
+4 LDAP
+4.1 Basics
+4.2 Configuration
+4.3 LDAP Config Example
+
+4 Hints/Warnings
+
+1 Preparation
+=============
+1.1 DNS - setup
+---------------
+In order to install limez, you need to setup a host/ip with an own preferred
+MX-record pointing to himself. For example, if you create a host named
+'listserv.limez.net', you have to add an own MX 20 for this host. If you're not
+familiar with the domain name service, please consult the manuals or RFC's. 
+
+zonefile of limez.net:
+
+listserv         IN A     192.168.2.45
+                 IN MX    20 listserv.limez.net
+
+1.2 Interfaces
+--------------
+Once you have an IP-address, you need to install the interface with ifconfig.
+On solaris: 'ifconfig hme0:10 inet 192.168.2.45 up', make sure the interface
+is coming up at system boot time. (write IP into /etc/hostname.hme0:10)
+
+1.3 Users/Groups
+----------------
+In order to listen on the smtp-port (tcp/25), limez needs to be started as
+root. After that the user/group set in the 'limez.config' will be used to 
+communicate with other MTA's and to access files. This user must be added
+to the system (/etc/passwd) and should belong to the given group (/etc/group).
+
+1.4 DNS-Server
+--------------
+Your system needs to be configured with DNS. The domain name service config
+file (/etc/resolv.conf) must contain at least one nameserver, the service-
+file (/etc/nsswitch.conf) must contain 'hosts: dns'.
+
+2 Installation
+==============
+2.1 Source distribution
+-----------------------
+2.1.1 Extract the distribution
+------------------------------
+After downloading the source distribution you have to unzip and untar
+the package. You will need the gnu tar program and gzip.
+
+> gtar zxvf limez-*.tgz
+or
+> gzcat limez-*.tgz | tar xvf -
+
+2.1.2 Configure your needs
+--------------------------
+Limez uses the gnu automake/header/conf. You may see all the available
+options by executing:
+
+./configure --help
+
+Usually you just have to type './configure --prefix=<install dir>', 'make'
+and 'make install' to build and install limez to the desired location. If
+you want database support, you need the additional options:
+
+  --enable-mysql-db       compilation with MySQL database support
+  --enable-postgres-db    with postgreSQL database support 
+  --enable-msql-db        with Hughes MiniSQL database support (not working)
+  --enable-iplanet-ldap   with Netscape IPlanet SDK support
+  --enable-open-ldap      with OpenLDAP support
+
+If you use database/ldap support be sure to know where to find the necessary
+libs (libmysqlclient.so, libpg.so, libldap.so) and include files. Then you
+need to set the environment before starting configure. Suppose you use tcsh,
+and MySQL is installed in '/opt/mysql' you would have to type the following:
+
+You may not configure multiple database drivers but database and ldap can 
+be used together for different lists.
+
+setenv CPPFLAGS "-R/opt/mysql/lib -L/opt/mysql/lib -I/opt/mysql/include"
+setenv LDFLAGS "-L/opt/mysql/lib"
+
+Then you may configure and build limez.
+
+2.1.3 Build and Install
+-----------------------
+After configuring you just need to call 'gmake' or 'make'. GNU make should be
+preferred. Once the compiler has been finished there should be a program 
+named limez in the src/ - directory. You can try to start the binary with 
+the option '-v'. Limez should tell the version, build date and compiled options:
+
+>./limez -v
+Server version :  Limez 1.0-beta-3d (Unix)
+Server built   :  Mar  9 2001 10:43:01
+Server options :  + file storage support
+                  + LDAP support (OpenLDAP 20007)
+                  + MySQL database support (3.22.27)
+
+If the desired options are set, just call 'gmake install' or 'make install'.
+
+2.2 Binary distribution
+-----------------------
+Limez actually can be installed wherever you like. If you want to install
+limez in /www/apps/limez you should go to /www/apps and untar the package.
+
+> gtar zxvf limez-x-x-x-x.tar.gz
+
+Now we need to set the user/group of the complete limez-dir: 
+
+> chown -R limez:limez /www/apps/limez
+> chmod g+s /www/apps/limez
+
+2.3 Editing the limez - mainconfig 'limez.config'
+-------------------------------------------------
+First of all, you should edit the 'server_domain' to the domain you set up
+before. Set the 'server_host' and 'server_send_host' to the IP/DNS-name of your
+interface (the machine's IP-Address). Just configure one simple list (test)
+for testing purposes. Try using a file-list rather than database because it's
+easier to set up.
+
+2.4 Starting limez
+------------------
+Limez must be started as super-user. After config changes you should let limez test
+the configuration syntax by running 'limez -t'. You will see all configuration
+entries (mainconfig and all configured mailinglists). Furthermore, limez tells
+you if any parameter could not be understood. If no errors occur, you
+can run limez without parameters. Now you can check the listen on the given
+interface by calling:
+
+> netstat -an | grep LISTEN | grep 25
+tcp        0      0 192.168.0.3:25            0.0.0.0:*               LISTEN
+
+As you see here a process is listening on the IP 192.168.0.3 port 25.
+Another way to check if limez is running is to use the telnet program:
+
+bender> telnet bender 25
+Trying 192.168.0.3...
+Connected to bender.
+Escape character is '^]'.
+220 bender.limez.net SMTP Limez 1.0; Sun, 18 Feb 2001 15:51:52 -0800
+helo x
+250 bender.limez.net Hello bender.limez.net [192.168.0.3], pleased to meet you
+quit
+221 bender.limez.net closing connection
+Connection closed by foreign host.
+bender>
+
+The output should be similar. Please check if both hosts have been resolved
+correctly (the line beginning with 250 before and after 'Hello').
+
+2.5 First steps
+---------------
+Send an e-mail to 'server_name'@'server_domain' with 'help' as body. Limez
+should generate an answer-mail and send it within 10 secs. Add yourself to the
+test-list by sending 'add test' to limez. Send a broadcast mail to
+test@'server_domain'.
+
+2.6 Start/Stop script
+---------------------
+You will find the limez start/stop script in the directory 'scripts'. Just
+copy this script to /etc/init.d/limez and link it to /etc/rc3.d/S88limez
+to start on system boot and /etc/rc0.d/K30limez to stop limez on shutdown.
+This only works on SYS/5 (Solaris/Linux) this way, on BSD-Unix (e.g. FreeBSD)
+you need to edit the file /etc/rc(.local).
+
+2.7 Limez Administrator
+-----------------------
+The limez package also contains a nice web-frontend called the limez admin.
+You need to install a webserver which can handle PHP >= 4.0 (e.g. apache + php4)
+(may be downloaded here: http://www.apache.org http://www.php.net).
+
+You have to copy the 'admin' directory from the limez distribution to the 
+document root of the webserver. This directory contains the config file 
+'limez.ini' where the necessary connection parameters have to be changed.
+
+$limez_host = "192.168.0.3";
+--> has to be the same as the key 'server_host' in the limez main config
+
+$limez_port = "25";
+--> has to be the same as the key 'server_port' in the limez main config
+
+$limez_pass = "admin";
+--> has to be the same as the key 'server_web_pass' in the limez main config
+
+If the administrating webserver runs on another machine you need to add another
+key 'server_web_hosts' containing the IP address of the webserver machine
+in the limez main config. If you use database main config (server_config 'database')
+and the IP would be '192.168.0.4' you need to start limez this way:
+
+./limez -s server_web_hosts 192.168.0.4
+
+3 Database
+==========
+3.1 Creating MySQL Database User/DB
+-----------------------------------
+Log into the DB with admin rights and create a database for limez (create
+database limez). Now we need to add a user for this db (GRANT ALL PRIVILEGES
+ON limez.* TO limez@localhost IDENTIFIED BY 'secret677'). If the listserver is
+running on another host you need to exchange 'localhost' by the hostname or
+IP limez is running on.
+
+3.2 Creating postgres Database User/DB
+--------------------------------------
+please refer to the postgres documentation.
+
+3.3 Database Tables
+-------------------
+On startup limez checks the db for the config/sender/user tables. If 
+the necessary tables do not exist, they will be created automatically.
+
+limez uses the following tables:
+
+limezconfig - the config for the server and the lists
+limezsender - all the people who are allowed to send to list (if set in config)
+<listname>  - for every list there is a table containing the users
+
+If the listname contains special characters (like '-' or '.' which are allowed
+as listname) but not as database tables, you would have to set the list key
+'list_usertable_name' in listconfig.
+
+3.4 Configuration
+-----------------
+
+db_host       - hostname used to connect to the database server, if not set,
+                the database clients try to connect via Unix named socket 
+                rather than TCP/IP. You may specify the symbolic name or IP
+                the DB server is running on
+
+db_name       - name of the database should be used (selected) while connecting
+                to the DB server. Some databases allow default databases for
+                every user but this option is mandatory here. A database server
+                may host different databases, so you need to tell limez.
+
+db_user       - username used to authenticate, some database server do not require
+                user/password sign on but for security reasons it is indispensible.
+
+db_pass       - the password for 'db_user', some database server may accept user
+                with empty passwords but please set one ...
+
+list_usertable_name - as you read in chapter 3.3 limez uses the 'list_name' as
+                      default name of the user table. In some cases this may not
+                      work so you can change the tablename here. This is also
+                      a good way to have different lists with the same users
+
+3.5 DB Config Example
+---------------------
+server config
+-------------
+server_config database
+db_host       bender
+db_name       limezdb
+db_user       lmiezuser
+db_pass       secretpw
+
+list config
+-----------
+list_name        test
+list_user_source database
+
+4. LDAP
+=======
+The newest version of limez supports the storage of user and sender in
+the LDAP Directory Server. Limez may be compiled to support the OpenLDAP
+library (www.openldap.org) and Netscape Iplanet Directory Server SDK
+(www.iplanet.com).
+
+4.1 Basics
+----------
+You can tell limez the 'list_user_source' and/or 'list_sender_source' is
+'ldap'. Furthermore you need to specify 'ldap_hosts' and 'ldap_base_dn' to
+get LDAP working. The default filter expects that the users are member
+of the given group. The group must match the following criteria.
+
+1. must be located under 'ldap_base_dn'.
+2. must have the objects 'groupofuniquenames' and 'mailgroup' if you use
+   the default filter
+3. must have the attribute 'cn=<groupname>'
+4. contains references to the members of the group 'uniquemember'
+
+Limez now knows all distinguished names of the users and looks them up
+'sn', 'givenname' and 'mail'. The attribute 'mail' will be used as the
+e-mail address of the user.
+
+4.2 Configuration
+-----------------
+The following keys are used to access the ldap directory:
+
+ldap_hosts   - host(s) where the ldap-server is running on, you may add 
+               hosts separated by space. If the server is not running on
+               the default port 389, you have to specify 'host:port'
+
+ldap_base_dn - the distinguished name is the base for all searches
+
+ldap_user    - username used to authenticate to the directory server, if not set,
+               anonymous bind will be performed
+
+ldap_pass    - password used to authenticate to the directory server, if not set,
+               anonymous bind will be performed
+
+list_ldap_user_group   - the groupname where to get the user from, if not set,
+                         the listname will be used as group here
+
+list_ldap_sender_group - the groupname where to get the sender from, if not set,
+                         the listname will be used as group here
+
+ldap_filter  - search filter used to get the groups, if not set, the default filter 
+               '(objectclass=groupofuniquenames)(objectclass=mailgroup)' will be
+               used. The group and the filter will be added '(&(cn=<group>)<filter>)'
+
+Currently only read operations are performed, no user/sender may be added or
+deleted in the LDAP Storage. Storing the limez/list configuration is NOT supported
+yet, you should use a database here.
+
+4.3 LDAP Config Example
+-----------------------
+server config
+-------------
+ldap_hosts       "bender fry:390"
+ldap_base_dn     o=limez.net
+
+list config
+-----------
+list_name            test
+list_user_source     ldap
+list_ldap_user_group champs
+
+5 Hints/Warnings
+================
+- please change the limez admin password 'server_web_pass' in the main config,
+  use at least 8 characters
+
+- for security reasons please do not let limez children run as superuser.
+  Set 'server_uid' and 'server_gid' in mainconfig. You will have to chown
+  the limez root dir to this user:group
+
+- if limez creates the logfile 'limez.log' as root (on start) and then drops
+  privileges the processes may not be able to access (write) the logfile
+  anymore, be sure the directory-permissions are set correctly (775)
+
+- if you are using the limez chroot()- environment ('limez_root') (security
+  feature), you have to create a new etc - directory containing those files
+  under the directory 'limez_root' is set to. (/etc/resolv.conf etc.)
+
+- do not let limez listen on all interfaces (default), set 'server_host'
+  and 'server_send_host' to the IP you set up for the listserver to prevent
+  confusion of other MTA's and problems with other MTA's running on the same
+  machine
+
+- if using database mainconfig ('server_config "database"') you can add/change
+  the configuration by applying '-s <key> <value>' as command line parameter.
+  After changing the config (e.g. changing values in the limez admin) the new
+  value will be stored in database config permanently
+
+- some main config keys are only temporarily and are not written to the config-
+  file/table, they have to be added with '-s <key> <value>' as option every time
+  limez starts (e.g. 'server_daemonize' or 'debug_test_only')
+
+- if you are using the web-frontend limez admin please protect the location with
+  password/IP (otherwise anybody may change the config)
+
+---
+If you experience problems with db/ldap-access/limez config, the FAQ 
+(http://www.limez.net/) may be helpful. If this still can't solve
+your problems then send an e-mail to support@limez.net (please attach the log-
+file with 'debug_level 9' and the output of 'limez -t', preferrable with-
+out passwords ;)).

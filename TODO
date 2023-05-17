@@ -1,0 +1,16 @@
+- send e-mail to given list of users -messagefile= -userfile= (instant broadcast)
+- forwarding to sendmail (proxy) if messages are not for limez
+- semaphores for user-files
+- personalization (store first and lastname of user in storage)
+  and exchange tags in the mailbody
+- X-Administrator (java/c++), not only php4
+- ESMTP protocol extension
+- receiving messages vi sendmail/qmail - forward (limezgate script)
+- better use of gnu auto-tools (configure, install etc.)
+- moderated lists 'list_moderator'
+- rotate limez.log (by size or date)
+- roguewave - lib support
+- binaries 
+- add time zone names +100 (CET)
+- 'server_uid' and 'server_gid' should handle symbolic names too
+- multiple 'server_admin' and 'list_admin' - entries

@@ -1,0 +1,33 @@
+/* DATEI: limezformate.css */
+
+body       { margin-left: 1cm; margin-right:1cm}
+
+p,h1,h2,h3,h4,ul,ol,li,div,td,blockquote { font-family:Arial,sans-serif; }
+
+p,ul,ol,li,div,td { font-size:10pt; }
+
+#listing   {  color : #000000; }
+a          {  text-decoration : none; color : #0000DD}
+
+#bglisting { background-color : #F0F0FF; }
+
+ul.rund    { ul list-style-type:disk }
+
+h2         { font-size:16pt;text-align:center; }
+
+h3	   { font-size:14pt;text-align:center; }
+
+pre        { font-family:Courier New,Courier; font-size:10pt; color:#000000; }
+
+tt         { font-family:Courier New,Courier; font-size:10pt; color:#0000C0; }
+
+#lite      { text-indent:0.3cm; text-decoration:none; color:#F0F0F0; }  
+#dark      { text-indent:0.3cm; text-decoration:none; color:#0000CC; } 
+#tbhel     { background-color: #E6EBF5; }
+#tbdkl     { background-color: #555596; }
+#var       { margin: 0.0cm 0.2cm 0.0cm 0.2cm; color:#FFFFFF; font-family:Arial,sans-serif; }
+#val       { margin: 0.0cm 0.2cm 0.0cm 0.2cm; color:#000066; font-family:Arial,sans-serif; }
+#vft       { margin: 0.0cm 0.2cm 0.0cm 0.2cm; color:#000066; font-family:Arial,sans-serif; font-weight:bold; }
+
+#schmal    { margin-left:3cm; margin-right : 3cm; }
+#breit     { margin-left:0.5cm; margin-right:0.5cm;}

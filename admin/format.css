@@ -1,0 +1,53 @@
+/* format.css */
+
+body       { margin-left: 2mm; margin-right:2mm}
+
+p,h1,h2,h3,h4,ul,ol,li,div,td,blockquote { font-family:Arial,sans-serif; }
+
+td             { min-height:8mm; font-size:10pt;}
+
+
+p,ol,li,div    { font-size:10pt; }
+ul             { font-size:10pt; }
+
+
+#listing   {  color : #000000; }
+a          {  text-decoration : none; color : #000000;}
+
+#bglisting { background-color : #F0F0FF; }
+
+ul.rund    { ul list-style-type:disk }
+
+h2         { font-size:16pt;text-align:center; }
+
+
+h3       { font-size:14pt;text-align:center; }
+dir      { font-size:16pt; }
+
+pre        { font-family:Courier New,Courier; font-size:10pt; color:#000000; }
+
+tt         { font-family:Helvetica; font-size:4mm; color:#0000C0; }
+
+#ll        { font-family:Helvetica; font-size:4mm; color:#000000; }
+#lite      { text-indent:0.3cm; text-decoration:none; color:#F0F0F0; font-size : 8pt; }
+#big       { text-indent:0.3cm; text-decoration:none; color:#F0F0F0; font-size : 12pt; }
+#hint      { font-size : 5mm; }
+#error     { font-family:Helvetica; font-size:16pt; color:#000000; }
+
+#dark      { text-indent:0.3cm; text-decoration:none; color:#000000; font-family:Arial,sans-serif; font-size:4mm;}
+#dark2     { text-indent:0.3cm; text-decoration:none; color:#00CCCC; font-family:Arial,sans-serif; font-size:4mm;}
+#sgrey     { text-indent:0.3cm; text-decoration:none; color:#009999; font-family:Arial,sans-serif; font-size:4mm;}
+#tbhel     { background-color: #dddddd; }
+#whi       { background-color: #ffffff; }
+#tbinfo    { background-color: #444444; color : #00E632;}
+#tbinf2    { background-color: #000000; color : #00E632; font-size : 9pt; }
+#tbhel2    { background-color: #bbbbbb; }
+#tbdkl     { background-color: #555596; }
+#var       { margin: 0.0cm 0.2cm 0.0cm 0.2cm; color:#FFFFFF; font-family:Arial,sans-serif; }
+#val       { margin: 0.0cm 0.2cm 0.0cm 0.2cm; color:#000066; font-family:Arial,sans-serif; }
+#vft       { margin: 0.0cm 0.2cm 0.0cm 0.2cm; color:#000066; font-family:Arial,sans-serif; font-weight:bold; }
+
+#schmal    { margin-left:3cm; margin-right : 3cm; }
+#breit     { margin-left:0.5cm; margin-right:0.5cm;}
+
+select     { background-color : #ffffff; }

@@ -1,0 +1,58 @@
+Limez 1.0-beta-4 (12-Mar-2001)
+------------------------------
+- LDAP - (openLDAP + Iplanet SDK) support added (user/sender, read only)
+- general bugfixes, error conditions changed
+- 'list_header_file' and 'list_footer_file' now working (for broadcast)
+- receive multiple recipient mail problem fixed (limez only saw the first one)
+- '\n' only mail problem fixed (problem occured with welcome/bye msg)
+- Hughes MiniSQL support added, but the DB lacks some essential functions
+  like 'select count(*) from x' and 'select * from z LIMIT x, y'
+- all msg-files (welcome/bye/header/footer etc.) do not require '.\n' anymore
+
+Limez 1.0-beta-3 (05-Mar-2001)
+------------------------------
+- 'server_fake_name' (pretend we are not running the limez MTA)
+- 'server_command_quiet' (suppress all answer messages)
+- minor changes + bugfixes
+- limez mail commands may be written in the 'Subject:' line
+- MTA bug fixed (could not handle multiple welcome/HELO lines)
+- include problem (FreeBSD) fixed
+- testconnect-bug fixed
+
+Limez 1.0-beta-2 (02-Mar-2001)
+------------------------------
+- quiet - bug fixed (this command did not work)
+- other minor bufgixes 
+
+Limez 1.0-beta-1 (01-Mar-2001)
+------------------------------
+- complete rewrite of sources (took a couple of months)
+- limez administrator protocol (can be used for admin or other apps)
+- limez admin written in php-4.0 (web frontend)
+- key 'server_send' has been changed to 'server_send_host' 
+- keys 'mailinglist_db' and 'list_config' added 
+- speed improvements (broadcast list)
+- higher availability due to new spooling architecture 
+- binary distributions are available in the next couple of days 
+- sender - table structure has been changed
+
+Limez 0.6rel (05-Jun-2000)
+--------------------------
+- Postgres auth-bug fixed 
+- general bugfixes 
+- 'list_header_subject' added 
+- 'list_max_mailsize' added 
+- 'server_max_hops' added 
+- improved log format 
+
+Limez 0.6a3 (01-May-2000)
+-------------------------
+- Postgres-SQL - support added
+- FreeBSD - support added
+- spool-bug fixed (spooled mails could not be resent)
+- header will be set if they should be overridden and do not exist
+- database table structures have changed, please drop them before upgrading !!!
+
+Limez 0.6a1 (25-April-2000)
+---------------------------
+- initial announced version

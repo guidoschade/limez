@@ -1,0 +1,33 @@
+default: all
+
+all:
+	aclocal # --verbose
+	autoheader 
+	automake # --verbose
+	autoconf
+
+clean:
+	rm -f Makefile.in
+	rm -f config.status
+	rm -f config.cache
+	rm -f config.log
+	rm -f config.h
+	rm -f config.h.in
+	rm -f Makefile
+	rm -f src/Makefile.in 
+	rm -f src/Makefile
+	rm -f configure
+	rm -f src/*.o
+	rm -f src/spool/*
+	rm -f src/done/*
+	rm -f src/limez
+	rm -f src/limez.log
+	rm -f stamp-h
+	rm -f stamp-h.in
+	rm -rf src/.deps
+	rm -f src/cache.bin
+
+mkdist:
+	rm -rf stamp-h.in
+	rm -rf acconfig.h
+	rm -rf aclocal.m4

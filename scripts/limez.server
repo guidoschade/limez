@@ -1,0 +1,32 @@
+#!/bin/sh
+# limez start/stop
+# please configure here
+# ---------------------
+LIMEZDIR=/home/lonestar/limez/src
+DB_HOST=defiant
+DB_NAME=limez
+DB_USER=limez
+DB_PASS=limez
+# ---------------------
+LIMEZ_DB="./limez -s server_config database -s db_host $DB_HOST -s db_user $DB_USER -s db_name $DB_NAME -p"
+LIMEZ_FILE="./limez -s server_config limez.config"
+
+case "$1" in
+'start')
+	echo "Starting limez mailinglist manager..."
+	( cd $LIMEZDIR ; echo $DB_PASS | $LIMEZ_DB &)
+        ;;
+
+'stop')
+	ps -ef | grep limez | grep -v sh | grep -v grep | awk '{print $2}' | xargs kill	
+        ;;
+
+'restart')
+	ps -ef | grep limez | grep -v sh | grep -v grep | awk '{print $2}' | xargs kill -1	
+	;;
+
+*)
+        echo "Usage: $0 { start | stop | restart}"
+        ;;
+esac
+exit 0

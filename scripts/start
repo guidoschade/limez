@@ -1,0 +1,1 @@
+./limez -d -s server_config database -s db_host defiant -s db_name limez -s db_user limez -s db_pass limez $*

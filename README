@@ -1,0 +1,244 @@
+---------------------
+title  : README file
+author : Guido Schade
+edited : 09-Mar-2001
+---------------------
+
+1 What exacly is Limez ?
+========================
+
+Limez is a mailinglist manager. It has an administrative e-mail-account
+which can be used to get information of all configured lists and to add
+users to or remove them from lists. Unlike some perl-based managers 
+limez is able to receive and send e-mails by himself. So it's pretty 
+simple to setup because knowledge of sendmail configuration is not 
+necessary. But you should at least know something about DNS and SMTP.
+
+2. How do i install Limez ?
+===========================
+
+Please refer to the INSTALL - file.
+
+3. How does limez work ?
+========================
+
+Limez is waiting for incoming connections on the SMTP port. If a remote
+MTA sends a mail limez checks it's responsibility for this e-mail (for
+this recipient) and either accepts or rejects the e-mail. The e-mail
+will be saved in the spool-area and unqueued by the limez manager. The
+limez manager is usually running every 10 seconds. If there are received 
+messages the manager will check the recipient and either generate one 
+or more answer messages or send the e-mail to all users of the desired 
+list (if the sender is authorized).
+
+4. Limez files
+==============
+4.1 Welcome/Goodbye Message
+---------------------------
+
+If you want to send a message to the newly subscribed/unsubscribed users
+you can specify the key 'list_welcome' and 'list_goodbye'. The value is
+the filename containing the message. Either the name has to be absoulute
+(beginning with /) or relative to the location limez was started. 
+
+The file must contain header information and the message (mail body). The
+header is separated from the body by a single empty line.
+
+example:
+----
+Subject: welcome aboard
+
+hello
+----
+
+The headers 'date:', 'message-id' and 'to:' will be added by limez. All other
+headers can be added in the message file.
+
+----
+Subject: welcome aboard
+Sender: me@domain.com
+Reply-To: me@domain.com
+From: me@domain.com
+
+helo
+welcome
+----
+
+4.2 Header/Footer file
+----------------------
+The new version of Limez supports header/footer message files for every
+list. Those files will be added to the mails sent to the list.
+
+example footer message (list_footer_file)
+----
+FOOTER
+HERE
+----
+
+the sent message will look this way:
+
+<usual mail header, modified if list_header_xxx was specified>
+<list_header_file>
+<usual message body>
+<list_footer_filer>
+
+5. Limez mail commands
+======================
+
+The following commands can be sent to limez ('server_name'@'server_domain').
+
+app <pass> <cmd> <list> [e-mail] ... approve command with password
+add <list> [e-mail] ................ adding [e-mail] to <list>
+del <list> [e-mail] ................ removing [e-mail] from <list>
+help ............................... this helppage
+quiet .............................. reply mail will be suppressed
+
+the following commands always need to be approved by password:
+
+lists .............................. showing all configured lists
+addsender <list> <e-mail> .......... add sender [e-mail] to <list>
+delsender <list> <e-mail> .......... del sender [e-mail] from <list>
+xadd <list> <e-mail> ............... add and ignore welcome message if set
+xdel <list> <e-mail> ............... del and ignore bye message if set
+
+6. Extended Limez SMTP - Protocol
+=================================
+
+To control limez with the limez admin or other tools the following
+extensions of the SMTP protocol are useful. All those commands need
+to be approved by 'lpwd' and can not be mixed with usual smtp commands.
+On success the commands return a code beginning with 2, otherwise you
+will get error messages starting with 5.
+
+6.1 LADD (limez add)
+--------------------
+With the ladd command you can add new configuration keys and create files.
+
+ladd config limez <key> <value>
+     - add the specified key to the limez main config
+
+ladd config <listname> <key> <value>
+     - add the specified key to the config of list <listname>
+
+ladd file <filename>
+     - creates the file <filename> and inserts all the lines starting
+       with '250-'
+
+ladd dblist <name>
+     - create new mailinglist with config in database
+
+ladd list <name> <filename>
+     - create new list <name> with the file <filename> as config
+
+6.2 LCMD (limez command)
+------------------------
+Used to subscribe/unsubscribe user (here you can issue all the limez
+mail commands). You do not need to approve the command with the password 
+again. Please refer to section 4.
+
+lcmd add cinema <user@domain.com>
+
+Additionally you may use the xdel command (to del someone without sending
+a welcome message) and xadd (to add someone quietly).
+
+6.3 LDEL (limez delete)
+-----------------------
+This command can be used to delete configuration values or lists.
+
+ldel config limez <key> <value>
+     - delete the given key containing the given value from the limez main config
+
+ldel config <listname> <key> <value>
+     - delete the given key containing the given value from the config
+       of <listname>
+
+ldel list <listname>
+     - deletes the given mailinglist and all the config entries
+
+ldel file <filename>
+     - delete the file <filename> from filesystem
+
+6.4 LPWD (limez password)
+-------------------------
+Authorize with password. If the password does not match limez will wait some
+seconds and reply with an error-message. Must be used before any other commmand
+and can be applied only once.
+
+lpwd secret88
+
+6.5 LSHW (limez show)
+---------------------
+Prints the requested config, info or file. The following sub-commands are
+valid:
+
+lshw config limez
+     - prints all server configuration keys and values
+
+lshw config <name of mailinglist>
+     - prints all list configuration keys and values
+
+lshw mainkeys
+     - prints limez server keys (keynames, default values, options, types etc.)
+
+lshw listkeys
+     - prints limez list keys (keynames, default values, options, types etc.)
+
+lshw lists
+     - prints the names of all configured lists
+
+lshw info
+     - prints status informations and some statistics
+
+lshw file <filename>
+     - prints the contents of the given <filename>
+
+lshw usercount <listname>
+     - returns the number of subscribed users of list <listname>
+
+lshw user <listname> <count>
+     - returns users (subscriber) of list <listname>
+       <count> starts with 1, 1: 1-20, 2: 21-40 ...
+
+5.6 LRLD (limez reload)
+-----------------------
+Sends an SIGINT-signal to the parent (root) process forcing him to reload
+the configuration files/tables. After changes in the configs you need to
+issue this command.
+
+lrld
+
+7. Internal structure (for developers)
+======================================
+
+The following classes are part of limez:
+
+address       - e-mail address (user @ domain)
+config        - configuration class (reads/writes/stores/handles configs)
+connection    - TCP - connection stuff
+database      - database dependent methods
+datablock     - storage container
+dbstorage     - Database storage, inherits storage
+filestorage   - Filesystem storage, inherits storage
+generator     - creates e-mails (for admin, errors etc.)
+keyvalue      - single line of configfile key value
+ldapstorage   - LDAP storage, inherits storage
+line          - line of e-mail/file
+list          - template listclass, contains listelements
+listelement   - element of a list
+lightdir      - directory server dependent methods
+log           - global logging -> file/stdout
+mailinglist   - contains config of list and list management
+manager       - takes care about spool, broadcast and messages
+message       - single mail
+rawdata       - binary storage type
+receiver      - receives e-mails
+resolver      - DNS resolving/MX/cache
+scheduler     - task management, master-process
+semaphore     - semaphore management/blocking critical sections
+signalhandler - installs/block/release signal handling functions
+stat          - statistics, not implemented yet
+storage       - parent storage class, virtual
+task          - process class, virtual
+timer         - timer specific functions
+tools         - functions which did not fit anywhere else
+transmitter   - sending single e-mail to remote MTA

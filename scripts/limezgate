@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Limezgate is a shellscript used to pipe e-mails received by sendmail
+# or any other MTA to the limez spool directory enabling limez to 
+# receive mails in the same domain as sendmail/the other MTA.
+# please refer to the limez documentation for details.
+#
+# configure here
+SPOOLDIR=/var/tmp
+CREATEMOD=666
+# end
+
+RAND=$RANDOM
+TIMESTAMP=`date "+%Y%m%d%H%M%S"`
+MSGNAME=$TIMESTAMP-$RAND
+LOCKFILE="$SPOOLDIR/$MSGNAME.lock"
+DATAFILE="$SPOOLDIR/$MSGNAME.data"
+CONFIGFILE="$SPOOLDIR/$MSGNAME.config"
+LOGFILE="$SPOOLDIR/$MSGNAME.log"
+
+# parameter check
+if [ ! $# -eq 1 ]; then
+  echo "usage: $1 <recipient>"
+  exit 1
+fi 
+
+# create lock file
+echo "lock_pid  0" > $LOCKFILE
+echo "lock_date 0" >> $LOCKFILE
+chmod $CREATEMOD $LOCKFILE
+
+# create data file (write all data got from stdin here)
+
+# create config file
+
+# delete lock file
